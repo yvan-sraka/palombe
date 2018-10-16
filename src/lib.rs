@@ -23,6 +23,11 @@ use std::ffi::{CStr, CString};
 use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 
+#[macro_use]
+extern crate pyo3;
+use pyo3::prelude::*;
+use pyo3::wrap_pyfunction;
+
 fn __mkfifo(name: &CStr) -> PathBuf {
     let prefix = Path::new("/tmp/palombe/");
     let path = prefix.join(name.to_str().unwrap());
@@ -35,6 +40,7 @@ fn __mkfifo(name: &CStr) -> PathBuf {
     path
 }
 
+#[pyfunction]
 #[no_mangle]
 pub extern "C" fn send(key: &CString, value: &CString) {
     let path = __mkfifo(&key);
@@ -46,6 +52,7 @@ pub extern "C" fn send(key: &CString, value: &CString) {
         .expect("Error: couldn't write the named pipe");
 }
 
+#[pyfunction]
 #[no_mangle]
 pub extern "C" fn receive(key: &CString) -> CString {
     let path = __mkfifo(&key);
