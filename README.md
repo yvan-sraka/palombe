@@ -1,25 +1,23 @@
+<!-- cargo-sync-readme start -->
+
 # 🕊️ Palombe [![cargo version](https://img.shields.io/crates/v/palombe.svg)](https://crates.io/crates/palombe)
 
-Palombe lets you send and receive messages synchronously through different processes using named pipes
+Palombe lets you send and receive messages synchronously through different processes using named pipes.
 
 ## Quick example
 
-### Thread A
-
 ```rust
 extern create palombe;
+use std::ffi::CString;
 
 fn main() {
-    palombe.send("foo", "bar");
+    let key = CString::new("foo").unwrap();
+    let value = CString::new("bar").unwrap();
+    let key_ = key.clone();
+    let value_ = value.clone();
+    std::thread::spawn(move || palombe.send(&key_, &value_));
+    assert_eq!(receive(&key), value);
 }
 ```
 
-### Thread B
-
-```rust
-extern create palombe;
-
-fn main() {
-    println("{}", palombe.receive("foo")); // bar
-}
-```
+<!-- cargo-sync-readme end -->
