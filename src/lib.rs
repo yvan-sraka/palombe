@@ -64,3 +64,18 @@ pub extern "C" fn receive(key: &CString) -> CString {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn main() {
+        let key = CString::new("foo").unwrap();
+        let value = CString::new("bar").unwrap();
+        let key_ = key.clone();
+        let value_ = value.clone();
+        std::thread::spawn(move || send(&key_, &value_));
+        assert_eq!(receive(&key), value);
+    }
+}
