@@ -14,7 +14,7 @@
 //!     let key_ = key.clone();
 //!     let value_ = value.clone();
 //!     std::thread::spawn(move || palombe.send(&key_, &value_));
-//!     assert_eq!(receive(&key), value);
+//!     assert_eq!(palombe.receive(&key), value);
 //! }
 //! ```
 
@@ -35,6 +35,20 @@ fn __mkfifo(name: &CStr) -> PathBuf {
     path
 }
 
+/// Send a `value` associated with a `key` to another thread/program launched by the same user
+///
+/// # Example
+///
+/// ```rust
+/// extern create palombe;
+/// use std::ffi::CString;
+/// 
+/// fn main() {
+///     let key = CString::new("foo").unwrap();
+///     let value = CString::new("bar").unwrap();
+///     palombe.send(&key, &value);
+/// }
+/// ```
 #[no_mangle]
 pub extern "C" fn send(key: &CString, value: &CString) {
     let path = __mkfifo(&key);
@@ -46,6 +60,19 @@ pub extern "C" fn send(key: &CString, value: &CString) {
         .expect("Error: couldn't write the named pipe");
 }
 
+/// Receive the `value` associated with a `key` to another thread/program launched by the same user
+///
+/// # Example
+///
+/// ```rust
+/// extern create palombe;
+/// use std::ffi::CString;
+/// 
+/// fn main() {
+///     let key = CString::new("foo").unwrap();
+///     let value: CString = palombe.receive(&key);
+/// }
+/// ```
 #[no_mangle]
 pub extern "C" fn receive(key: &CString) -> CString {
     let path = __mkfifo(&key);

@@ -16,7 +16,7 @@ fn main() {
     let key_ = key.clone();
     let value_ = value.clone();
     std::thread::spawn(move || palombe.send(&key_, &value_));
-    assert_eq!(receive(&key), value);
+    assert_eq!(palombe.receive(&key), value);
 }
 ```
 
